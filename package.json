@@ -4,7 +4,7 @@
   "description": "\"# DxWeb\"",
   "main": "index.js",
   "scripts": {
-    "web":"node server/express/server.js"
+    "web": "node server/express/server.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,10 @@
   },
   "homepage": "https://github.com/fanyonglong/DxWeb#readme",
   "dependencies": {
-    "express":"^4.16.2"
+    "express": "^4.16.2"
+  },
+  "devDependencies": {
+    "opn": "^5.1.0",
+    "yargs": "^10.0.3"
   }
 }
