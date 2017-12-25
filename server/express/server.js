@@ -7,19 +7,23 @@ const path=require('path');
 var rootPath=path.resolve(__dirname,'../../www/express-site');
 // respond with "hello world" when a GET request is made to the homepage
 
+//app.use(express.static('assets'));
+app.use('/assets', express.static(path.join(rootPath,'assets')));
 // app.get('/assets/*', function(req, res) {
 //   res.sendFile(req.url,{
 //     root:rootPath
 //   });
 // });
-app.use(function(req,res){
-  if(req.url.indexOf('/assets')==0)
-  {
-    res.sendFile('index.html',{
-      root:rootPath
-    });
-  }
-})
+// app.use(function(req,res,next){
+//   if(req.originalUrl.indexOf('/assets')==0)
+//   {
+//     res.sendFile(req.url,{
+//       root:rootPath
+//     });
+//    // res.end();
+//   }
+//  // next();
+// })
 
 
 app.get('/', function(req, res) {
