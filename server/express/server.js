@@ -3,10 +3,13 @@ var app = express();
 var http=require('http');
 const opn = require('opn');
 const args=require('yargs').default('open',false).argv;
-
+const path=require('path');
+var rootPath=path.resolve(__dirname,'../../www/express-site');
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/', function(req, res) {
-  res.send('hello world');
+  res.sendFile('index.html',{
+    root:rootPath
+  });
 });
 
 // npm run web -- --open
