@@ -6,6 +6,22 @@ const args=require('yargs').default('open',false).argv;
 const path=require('path');
 var rootPath=path.resolve(__dirname,'../../www/express-site');
 // respond with "hello world" when a GET request is made to the homepage
+
+// app.get('/assets/*', function(req, res) {
+//   res.sendFile(req.url,{
+//     root:rootPath
+//   });
+// });
+app.use(function(req,res){
+  if(req.url.indexOf('/assets')==0)
+  {
+    res.sendFile('index.html',{
+      root:rootPath
+    });
+  }
+})
+
+
 app.get('/', function(req, res) {
   res.sendFile('index.html',{
     root:rootPath

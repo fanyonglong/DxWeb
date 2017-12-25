@@ -7,7 +7,8 @@
   - [集成数据库](#express集成数据库)
   - [完整API](#http://www.expressjs.com.cn/4x/api.html)
 - node 同构渲染
-
+## 常用插件
+npm install --save-dev path-to-regexp  [路径解析](#https://www.npmjs.com/package/path-to-regexp)
 ## express 环境塔建
 `npm install express --save  ` [express](#https://www.npmjs.com/package/express)
 
