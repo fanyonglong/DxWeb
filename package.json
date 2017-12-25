@@ -1,0 +1,23 @@
+{
+  "name": "dx-web",
+  "version": "1.0.0",
+  "description": "\"# DxWeb\"",
+  "main": "index.js",
+  "scripts": {
+    "web":"node server/express/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fanyonglong/DxWeb.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fanyonglong/DxWeb/issues"
+  },
+  "homepage": "https://github.com/fanyonglong/DxWeb#readme",
+  "dependencies": {
+    "express":"^4.16.2"
+  }
+}
