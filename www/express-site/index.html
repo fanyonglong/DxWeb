@@ -6,8 +6,225 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
       <link rel="stylesheet" href="assets/index.css">
     <title>Document</title>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script> -->
+    <script>
+    /*
+    408:客户端在服务器准备等待的时间内没有发出请求。客户可以随时重复请求而不做任何修改。
+    服务器错误5xx:以数字“5”开头的响应状态代码表示服务器意识到错误或不能执行请求的情况。除了响应HEAD请求外，服务器应该包含一个包含错误情况说明的实体，以及它是临时还是永久状态。用户代理应该向用户显示任何包含的实体。这些响应代码适用于任何请求方法。
+    500 内部服务器错误:服务器遇到意外情况，阻止它履行请求。
+    */
+    var ajax = (function () {
+            function createXhr() {
+                var httpRequest;
+                // Old compatibility code, no longer needed.
+                if (window.XMLHttpRequest) { // Mozilla, Safari, IE7+ ...
+                    httpRequest = new XMLHttpRequest();
+                } else if (window.ActiveXObject) { // IE 6 and older
+                    httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                return httpRequest;
+            }
+            var extend = function(target,obj)
+            {
+                if(!obj)
+                {
+                        return target;
+                }
+                for(var name in obj)
+                {
+                    target[name]=obj[name];
+                }
+                return target;
+            }
+            function params(obj)
+            {
+                var result = [], name;
+                if (obj == null)
+                {
+                    return null;
+                }
+                for(name in obj)
+                {
+                    result.push(name+'='+obj[name]);
+                }
+                return result.join('&');
+            }
+            function noop(){}
+            function ajax(options)
+            {
+                options = extend({
+                    type:'get',
+                    url: "",
+                    data: null,
+                    aysnc: true,
+                    timeout:60000,
+                    success: noop,
+                    error:noop
+                }, options);
+                var xhr = createXhr(),data;
+                options.type = options.type.toUpperCase();
+                data = params(options.data);
+                if (options.type == "GET"||options.type=='HEAD')
+                {
+                    options.url += data?(options.url.indexOf('?') != -1 ? "&" : '?') + (data || ''):'';
+                    data = null;                
+                }
+
+                
+                /*
+                ie9:当readyState<2时,status,statusText 会访问错误
+                ie8:timeout 超时会报出未指明的误
+                执行顺序
+                readystatechange,readyState:1,status:0,body:,responseType:
+                loadstart,readyState:1,status:0,body:,responseType:
+                readystatechange,readyState:2,status:200,body:,responseType:
+                readystatechange,readyState:3,status:200,body:{"retStatus":200,"data":["aaa","bbbb"]},responseType:
+                readystatechange,readyState:4,status:200,body:{"retStatus":200,"data":["aaa","bbbb"]},responseType:
+                load,readyState:4,status:200,body:{"retStatus":200,"data":["aaa","bbbb"]},responseType:
+                loadend,readyState:4,status:200,body:{"retStatus":200,"data":["aaa","bbbb"]},responseType:
+                */
+                function ajaxCallback(name)
+                {
+                    console.log(name+",readyState:"+xhr.readyState+",status:"+(xhr.readyState>1&&xhr.status)+",statusText:"+(xhr.readyState>1&&xhr.statusText)+",body:"+(xhr.readyState>1&&xhr.responseText)+",responseType:"+xhr.responseType);
+                   // console.log(name+",readyState:"+xhr.readyState+",status:"+xhr.status+",statusText:"+xhr.statusText+",body:"+xhr.response+",responseType:"+xhr.responseType);
+                    if(xhr.readyState==4&&(xhr.status>=200||xhr.status<=300))   
+                    {
+                        options.success(xhr);
+                    }
+                }
+                xhr.onabort=function()
+                {
+                    ajaxCallback('abort');
+                }
+                /*
+                readystatechange,readyState:1,status:0,body:,responseType:
+                loadstart,readyState:1,status:0,body:,responseType:
+                readystatechange,readyState:4,status:0,body:,responseType:
+                timeout,readyState:4,status:0,body:,responseType:
+                loadend,readyState:4,status:0,body:,responseType:
+                */
+                xhr.ontimeout=function()
+                {
+                    ajaxCallback('timeout');
+                }
+                /*
+                0	UNSENT (未打开)	open()方法还未被调用.
+                1	OPENED  (未发送)	send()方法还未被调用.
+                2	HEADERS_RECEIVED (已获取响应头)	send()方法已经被调用, 响应头和响应状态已经返回.
+                3	LOADING (正在下载响应体)	响应体下载中; responseText中已经获取了部分数据.
+                4	DONE (请求完成)	整个请求过程已经完毕.
+                */
+                xhr.onreadystatechange=function()
+                {
+                    ajaxCallback('readystatechange');
+                }
+               // 
+                xhr.onloadstart=function()
+                {
+                    ajaxCallback('loadstart');
+                }
+                // ie 9
+                xhr.onload=function()
+                {
+                    ajaxCallback('load');
+                    /**
+                     * xhr.response 
+                     * xhr.responseText responseText 	此次请求的响应为文本，或是当请求未成功或还未发送时为 null。只读。
+                     * 响应实体的类型由 responseType 来指定， 可以是 ArrayBuffer， Blob， Document， JavaScript 对象 (即 "json")， 或者是字符串。如果请求未完成或失败，则该值为 null。
+                    */
+                  //  console.log(xhr.responseType );
+
+                }
+                // ie 10
+                xhr.onloadend=function()
+                {
+                    ajaxCallback('loadend');
+                }
+                xhr.onerror=function()
+                {
+                    ajaxCallback('error');
+                }
+                xhr.open(options.type, options.url, options.aysnc);
+                                /* ie 9 timeout 必须放在open后面
+                可以设置为一个毫秒的时间。当设置为非零值时，将导致提取在给定的时间过去之后终止。当时间已过，请求尚未完成，并且同步标志未被设置，则timeout事件将被调度，否则TimeoutError将抛出异常（对于该send()方法）
+                */
+                xhr.timeout = options.timeout;// 超出时间
+                /*
+                如果证书要包含在跨源请求中，则为true 。当它们被排除在跨域请求之外，并且在响应中cookie被忽略时，这个错误是错误的。最初是错误的。
+               当设置：InvalidStateError如果状态不是未发送或打开，或者send()标志已设置，则引发异常。*/
+                xhr.withCredentials = false;
+                if (options.type == "POST") {
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                }
+
+                var xhrObj=function()
+                {
+                    //responseType 
+                    xhr.send(data);
+                    return xhrObj;
+                }
+                xhrObj.xhr = xhr;
+
+                //支持:IE 9的只读
+                //使用onreadystatechange to replace onabort
+                // to handle未捕获的aborts
+                xhrObj.abort=function()
+                {
+                    xhr.abort();
+                    return this;
+                }
+                xhrObj.then=function(cb,ecb)
+                {
+                    options.success = cb;
+                    options.error = ecb || noop;
+                    return this;
+                }
+                return xhrObj;
+            }
+            return ajax;
+        }());
+
+       //DOMContentLoaded
+        window.onload=function(){
+
+        //    window.aaa= ajax({
+        //         url:"/getList",
+        //         data:{
+        //             timeout:10000,
+        //         },
+        //         timeout:6000
+        //     }).then(function(){
+
+
+        //     },function(e){
+
+        //     })();
+
+        ajax({
+                url:"/getList",
+                data:{
+                }
+            }).then(function(){
+
+
+            },function(e){
+
+            })();
+            // ajax({
+            //     url:"/getList2",
+            //     data:{
+            //     }
+            // }).then(function(){
+
+
+            // },function(e){
+
+            // })();
+        }
+    </script>
 </head>
 <body>
-    <h1 class="dx-header" >欢迎f</h1>
+
+
 </body>
 </html>

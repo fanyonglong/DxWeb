@@ -14,7 +14,9 @@
             "type": "node",
             "request": "launch",
             "name": "Launch express",
-            "program": "${workspaceFolder}/server/express/server.js"
+            "program": "${workspaceFolder}/server/express/server.js",
+            "args": [
+            ]
         }
     ]
 }
