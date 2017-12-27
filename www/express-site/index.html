@@ -58,8 +58,10 @@
                     data: null,
                     aysnc: true,
                     timeout:60000,
+                    beforeSend:noop,
                     success: noop,
-                    error:noop
+                    error:noop,
+                    complete:noop
                 }, options);
                 var xhr = createXhr(),data;
                 options.type = options.type.toUpperCase();
@@ -69,7 +71,7 @@
                     options.url += data?(options.url.indexOf('?') != -1 ? "&" : '?') + (data || ''):'';
                     data = null;                
                 }
-
+                
                 
                 /*
                 ie9:当readyState<2时,status,statusText 会访问错误
@@ -86,10 +88,18 @@
                 function ajaxCallback(name)
                 {
                     console.log(name+",readyState:"+xhr.readyState+",status:"+(xhr.readyState>1&&xhr.status)+",statusText:"+(xhr.readyState>1&&xhr.statusText)+",body:"+(xhr.readyState>1&&xhr.responseText)+",responseType:"+xhr.responseType);
-                   // console.log(name+",readyState:"+xhr.readyState+",status:"+xhr.status+",statusText:"+xhr.statusText+",body:"+xhr.response+",responseType:"+xhr.responseType);
+                    if(name=="beforeSend")
+                    {
+                        options.beforeSend();
+                    }
+                    // console.log(name+",readyState:"+xhr.readyState+",status:"+xhr.status+",statusText:"+xhr.statusText+",body:"+xhr.response+",responseType:"+xhr.responseType);
                     if(xhr.readyState==4&&(xhr.status>=200||xhr.status<=300))   
                     {
                         options.success(xhr);
+                    }
+                    if(name=="loadend"||name=="load"||name=="abort"||name=="")
+                    {
+                        options.complete();
                     }
                 }
                 xhr.onabort=function()
@@ -135,7 +145,7 @@
                   //  console.log(xhr.responseType );
 
                 }
-                // ie 10
+                // ie 10 
                 xhr.onloadend=function()
                 {
                     ajaxCallback('loadend');
@@ -159,6 +169,7 @@
 
                 var xhrObj=function()
                 {
+                    ajaxCallback('beforeSend');
                     //responseType 
                     xhr.send(data);
                     return xhrObj;
@@ -187,19 +198,20 @@
        //DOMContentLoaded
         window.onload=function(){
 
-        //    window.aaa= ajax({
-        //         url:"/getList",
-        //         data:{
-        //             timeout:10000,
-        //         },
-        //         timeout:6000
-        //     }).then(function(){
+            // 超时
+           window.aaa= ajax({
+                url:"/getList",
+                data:{
+                    timeout:10000,
+                },
+                timeout:6000
+            }).then(function(){
 
 
-        //     },function(e){
+            },function(e){
 
-        //     })();
-
+            })();
+        // 正常
         ajax({
                 url:"/getList",
                 data:{
@@ -210,16 +222,17 @@
             },function(e){
 
             })();
-            // ajax({
-            //     url:"/getList2",
-            //     data:{
-            //     }
-            // }).then(function(){
+            // 报错
+            ajax({
+                url:"/getList2",
+                data:{
+                }
+            }).then(function(){
 
 
-            // },function(e){
+            },function(e){
 
-            // })();
+            })();
         }
     </script>
 </head>
