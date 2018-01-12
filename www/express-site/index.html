@@ -87,7 +87,7 @@
                 */
                 function ajaxCallback(name)
                 {
-                    console.log(name+",readyState:"+xhr.readyState+",status:"+(xhr.readyState>1&&xhr.status)+",statusText:"+(xhr.readyState>1&&xhr.statusText)+",body:"+(xhr.readyState>1&&xhr.responseText)+",responseType:"+xhr.responseType);
+                    console.log(options.url+':,'+name+",readyState:"+xhr.readyState+",status:"+(xhr.readyState>1&&xhr.status)+",statusText:"+(xhr.readyState>1&&xhr.statusText)+",body:"+(xhr.readyState>1&&xhr.responseText)+",responseType:"+xhr.responseType);
                     if(name=="beforeSend")
                     {
                         options.beforeSend();
@@ -225,6 +225,17 @@
             // 报错
             ajax({
                 url:"/getList2",
+                data:{
+                }
+            }).then(function(){
+
+
+            },function(e){
+
+            })();
+            // 处理
+            ajax({
+                url:"/getList3",
                 data:{
                 }
             }).then(function(){
