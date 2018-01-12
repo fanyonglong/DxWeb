@@ -17,6 +17,14 @@
             "program": "${workspaceFolder}/server/express/server.js",
             "args": [
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "node server",
+            "program": "${workspaceFolder}/server/node/server.js",
+            "args": [
+            ]
         }
     ]
 }

@@ -1,3 +1,4 @@
+
 /*
 res.set(field [, value])
 Sets the response’s HTTP header field to value. To set multiple fields at once, pass an object as the parameter.
@@ -33,7 +34,9 @@ const opn = require('opn');
 const args=require('yargs').default('open',false).argv;
 const path=require('path');
 const { StringDecoder } = require('string_decoder');
+var sockjs = require('sockjs');
 var rootPath=path.resolve(__dirname,'../../www/express-site');
+
 // respond with "hello world" when a GET request is made to the homepage
 
 
@@ -87,16 +90,20 @@ if(req.query.timeout&&req.query.timeout>0)
 }
 });
 app.all('/getList2',function(req,res,next){
-  res.contentType('')
-    res.writeHead(500,"send fail")
-    res.end('请求的接口不正确');
-  //res.statusMessage='请求的接口不正确';
+  //res.contentType('')
+   // res.writeHead(500,"send fail")
+   // res.end(Buffer.from('请求的接口不正确'));
+
+    // res.setHeader('Content-Type', 'text/html');
+    // res.setHeader('X-Foo', 'bar');
+    // res.writeHead(200, { 'Content-Type': 'text/plain' });
+    // res.end('ok');
+
  // res.status(400).end();
  //res.statusMessage='请求的接口不正确';
 //res.status(500).end();
- // res.statusMessage="send fail";
- //res.statusCode=500;
- //res.status(500).send('请求的接口不正确');
+ //res.statusMessage="send fail";
+ res.status(500).send('请求的接口不正确');
 
  // res.send(500,{ error: 'something blew up' });
   // res.json({
@@ -146,6 +153,10 @@ app.use(function(err, req, res, next){
   }
 });
 
+app.get('/testStocket',(req,res)=>{
+
+  res.send('成功');
+});
 
 // npm run web -- --open
 app.listen(5888,()=>{

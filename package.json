@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/fanyonglong/DxWeb#readme",
   "dependencies": {
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "path-to-regexp": "^2.1.0",
+    "sockjs": "^0.3.19"
   },
   "devDependencies": {
     "opn": "^5.1.0",
