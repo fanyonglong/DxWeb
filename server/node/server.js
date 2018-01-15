@@ -1,3 +1,4 @@
+
 const http=require('http');
 const EventEmitter = require('events');
 const util = require('util');
@@ -7,6 +8,8 @@ const fs=require('fs');
 const args=require('yargs').default('open',false).argv;
 const mime=require('mime');
 const opn=require('opn');
+const child_process=require('child_process');
+
 var App=(function(){
     var routers=[];
     class Router{
@@ -158,11 +161,56 @@ App.router('/',function(req,res){
 App.router('/list',function(req,res){
     res.json({list:[1,2,3,4]});
 });
+
+
+
+server.on('close',function(){
+
+    console.log('close server');
+});
+
 server.listen(5888,function(){
     console.log('服务已启动');
+ 
+    let childp=child_process.exec('node ./server/node/stocket.js',{
+    // cwd:__dirname
+    },(e)=>{
+        console.log('stocket关闭');
+        if(e)
+        {
+            console.log(e);
+        }
+    });
+  
+
     if(args.open)
     {
         opn('http://localhost:5888/', {app: 'chrome'});
     }
+  
 });
+// process.on('SIGINT', function() {
+//      if(childp)
+//      {
+//         setImmediate(()=>{
+//             childp
+//         })
+//      }
+//      console.log('Got SIGINT.  Press Control-D/Control-C to exit.');
+//  });
+// process.on('SIGTERM',()=>{
+//     console.log('44444444');
+// });
 
+    // child_process.exec('node ./server/node/stocket.js',{
+    // // cwd:__dirname
+    // },(e)=>{
+    //     console.log('stocket关闭');
+    //     if(e)
+    //     {
+    //         console.log(e);
+    //     }
+
+    // });
+ 
+  

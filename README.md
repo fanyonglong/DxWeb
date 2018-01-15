@@ -838,7 +838,7 @@ client.search({
 - npm install mime-types -D 最终的JavaScript内容类型的实用工具。
 - npm install send
 - npm install parseurl 用memoization解析一个URL。
-
+- npm install socket.io  Socket.IO支持基于事件的实时双向通信
 ### send插件
 Send是一个用于从文件系统流式传输文件的库，作为支持部分响应（范围），条件GET协商（If-Match，If-Unmodified-Since，If-None-Match，If-Modified-Since）的http响应。高测试覆盖率以及可以在您的应用程序或框架中采取适当行动的细化事件。
 
