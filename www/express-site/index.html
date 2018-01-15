@@ -47,6 +47,117 @@
    }
    WebSocketTest();
   
+   var ajax=(function(){
+
+    function params(obj) {
+                var result = [], name;
+                if (typeof FormData!='undefined'&&obj instanceof FormData) {
+                    return obj;
+                }
+                if (obj == null) {
+                    return null;
+                }
+                for (name in obj) {
+                    result.push(name + '=' + obj[name]);
+                }
+                return result.join('&');
+            }
+  function Promise(fn)
+  {
+    var that=this;
+    function resolve()
+    {
+      that.resolve.apply(this,arguments);
+    }
+    function reject()
+    {
+      that.reject.apply(this,arguments);
+    }
+     fn(resolve,reject);
+  }
+  Promise.prototype.then=function(resolve,reject){
+    this.resolve=resolve;
+    this.reject=reject;
+  }
+  var extend = function (target, obj) {
+                if (!obj) {
+                    return target;
+                }
+                for (var name in obj) {
+                    target[name] = obj[name];
+                }
+                return target;
+   }
+   function ajax(options)
+   {     
+      return new Promise(function(resolve,reject){
+        var xhr=new XMLHttpRequest();
+        options=extend({
+          type:"get",
+          url:'',
+          dataType:"application/json",
+          data:null
+        },options);
+        var data=params(options.data);
+        options.type=options.type.toUpperCase();
+        if (options.type == "GET" || options.type == 'HEAD') {
+              options.url += data ? (options.url.indexOf('?') != -1 ? "&" : '?') + (data || '') : '';
+              data = null;
+        }
+
+        xhr.open(options.type,options.url,true);
+        xhr.setRequestHeader('custom-header','111');
+        // 解析返回数据 ie10+
+      //  xhr.responseType="json";
+       //ie9+
+        xhr.onload=function()
+        {
+            resolve('response' in xhr ? xhr.response : xhr.responseText);
+        }
+        // ie10
+        xhr.onloadstart = function () {
+            console.log('loadstart');
+        };
+             // ie10
+         xhr.onloadend = function () {
+            console.log('onloadend');
+        };
+        // ie9+
+        xhr.onabort=function(e)
+        {
+          reject({
+            name:'abort',
+            message:e
+          });
+        }
+        //ie10+
+        xhr.ontimeout=function(e)
+        {
+          reject({
+            name:'timeout',
+            message:e
+          });
+        }
+        xhr.onerror=function(e)
+        {
+          reject({
+            name:'error',
+            mssage:e
+          });
+        }
+        if(options.type=="POST")
+        {
+          
+        }
+        xhr.send(data);
+      })
+   }
+   return ajax;
+   }());
+   ajax({url:"/list",type:'post'}).then(function(d){
+
+    console.log(d);
+   });
   </script>
 </head>
 <body>

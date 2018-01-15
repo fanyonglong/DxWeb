@@ -129,10 +129,11 @@ var App=(function(){
         },
         json(data)
         {
+            data=JSON.stringify(data);
             this.writeHead(200, {
                 'Content-Length': Buffer.byteLength(data),
                 'Content-Type': 'application/json' });
-                this.end(JSON.stringify(data),'utf-8');
+                this.end(data,'utf-8');
         }
     });
     App.init(); 
@@ -154,7 +155,9 @@ App.use((()=>{
 App.router('/',function(req,res){
     res.sendFile(path.resolve(__dirname,'../../www/express-site/index.html'))
 });
-
+App.router('/list',function(req,res){
+    res.json({list:[1,2,3,4]});
+});
 server.listen(5888,function(){
     console.log('服务已启动');
     if(args.open)
