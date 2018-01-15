@@ -5,7 +5,8 @@ const path=require('path');
 const pathToRegexp =require('path-to-regexp');
 const fs=require('fs');
 const args=require('yargs').default('open',false).argv;
-
+const mime=require('mime');
+const opn=require('opn');
 var App=(function(){
     var routers=[];
     class Router{
@@ -67,14 +68,14 @@ var App=(function(){
             res.req=req;
             req.res=res;
             Reflect.setPrototypeOf(req,App.request);
-            Reflect.setPrototypeOfset(res,App.response);
+            Reflect.setPrototypeOf(res,App.response);
         });
     }
     App.use=handler=>{
-        let router=new Router('/',handler);
+        let router=new Router('(.*)',handler);
         router.use=true;
         let index=routers.slice().reverse().findIndex(item=>item.use===true);
-        routers.splice(index+1,0,new Router('/',handler));
+        routers.splice(index+1,0,router);
     };
     App.router=(path,handler)=>
     {
@@ -84,26 +85,54 @@ var App=(function(){
 
     });
     App.response=Object.assign(Object.create(http.ServerResponse.prototype),{
-        sendFile(path)
+        sendFile(filePath)
         {
+            try{
+                let req=this.req;
+              //  let accept=req.getHeader('Accept');
+                let contentType = this.getHeader('Content-Type');
+                if(!contentType)
+                {
+                    contentType=mime.getType(path.extname(filePath));
+                }
+                if(!fs.existsSync(filePath))
+                {
+                        this.statusCode =404;
+                        this.end();
+                        return;
+                }
+   
+                var data='', rs=fs.createReadStream(filePath,{
+                    flags: 'r',
+                    encoding: 'utf-8',
+                    fd: null,
+                    mode: 0o666,
+                    autoClose: true
+                });
 
-            var  rs=fs.createReadStream(path,{
-                flags: 'r',
-                encoding: 'utf-8',
-                fd: null,
-                mode: 0o666,
-                autoClose: true
-            });
-            
+                rs.on('data',chunk=>{
+                    data+=chunk;
+                });
+                rs.on('end',()=>{
+                    this.writeHead(200, {
+                        'Content-Length': Buffer.byteLength(data),
+                        'Content-Type': contentType });                  
+                        this.end(data);
+                });
+            }catch(e)
+            {
+                this.statusCode =500;
+                this.end(e);
+                return;
+            }
            
         },
         json(data)
         {
             this.writeHead(200, {
-                'Content-Length': Buffer.byteLength(body),
+                'Content-Length': Buffer.byteLength(data),
                 'Content-Type': 'application/json' });
-                this.end();
-          res.end(JSON.stringify(data),'utf-8');
+                this.end(JSON.stringify(data),'utf-8');
         }
     });
     App.init(); 
@@ -112,16 +141,18 @@ var App=(function(){
 var server=http.createServer(App);
 
 App.use((()=>{
-    let static=pathToRegexp('assets/*')
+    let static=pathToRegexp('/assets/(.*)')
     return function(req,res,next){
         if(static.test(req.url))
         {
-            res.sendFile(path.resolve(__dirname,'../../www/express-site/'))
+            res.sendFile(path.resolve(__dirname,'../../www/express-site/'+req.url))
+        }else{
+            next();
         }
     }
 })());
 App.router('/',function(req,res){
-    res.sendFile(path.resolve(__dirname,'../../www/express-site/'))
+    res.sendFile(path.resolve(__dirname,'../../www/express-site/index.html'))
 });
 
 server.listen(5888,function(){

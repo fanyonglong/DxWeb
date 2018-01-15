@@ -6,6 +6,7 @@
   - [错误处理](#express错误处理)
   - [集成数据库](#express集成数据库)
   - [完整API](#http://www.expressjs.com.cn/4x/api.html)
+  - [Node服务器](#Node服务器)
 - node 同构渲染
 ## 常用插件
 npm install --save-dev path-to-regexp  [路径解析](#https://www.npmjs.com/package/path-to-regexp)
@@ -831,3 +832,14 @@ client.search({
   console.trace(error.message);
 });
 ```
+## Node服务器
+常用插件
+- npm install mime -D 一个全面的，紧凑的MIME类型模块。
+- npm install mime-types -D 最终的JavaScript内容类型的实用工具。
+- npm install send
+- npm install parseurl 用memoization解析一个URL。
+
+### send插件
+Send是一个用于从文件系统流式传输文件的库，作为支持部分响应（范围），条件GET协商（If-Match，If-Unmodified-Since，If-None-Match，If-Modified-Since）的http响应。高测试覆盖率以及可以在您的应用程序或框架中采取适当行动的细化事件。
+
+希望提供映射到URL的整个文件夹？尝试服务静态。

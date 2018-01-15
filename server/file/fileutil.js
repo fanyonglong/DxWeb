@@ -7,17 +7,18 @@ const fs=require('fs');
 const args=require('yargs').default('open',false).argv;
 
 
-var filePath=path.resolve(__dirname,'../../www/index.html');
+var filePath=path.resolve(__dirname,'../../www/express-site/index.html');
 
 var rs=fs.createReadStream(filePath,{
-    encoding:'utf-8'
+   // defaultEncoding:"Buffer",
+ //   encoding:'utf-8' //Buffer
 });
 
-// rs.on('data',(data)=>{
+rs.on('data',(data)=>{
 
-// console.log('data');
-// });
+console.log('data'+data);
+});
 
-// rs.on('end',(data)=>{
-//     console.log('end');
-// });
+rs.on('end',(data)=>{
+    console.log('end');
+});
