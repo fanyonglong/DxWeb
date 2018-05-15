@@ -1,15 +1,16 @@
 
+//  npm run nodeweb -- --open
 const http=require('http');
 const EventEmitter = require('events');
 const util = require('util');
 const path=require('path');
 const pathToRegexp =require('path-to-regexp');
 const fs=require('fs');
-const args=require('yargs').default('open',false).argv;
+const args=require('yargs').boolean('open').argv;
 const mime=require('mime');
 const opn=require('opn');
 const child_process=require('child_process');
-
+console.log(args.open);
 var App=(function(){
     var routers=[];
     class Router{
