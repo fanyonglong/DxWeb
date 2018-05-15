@@ -4,6 +4,7 @@
   "description": "\"# DxWeb\"",
   "main": "index.js",
   "scripts": {
+    "chat":"node server/chat/server.js",
     "nodeweb": "node server/node/server.js",
     "web": "node server/express/server.js"
   },
